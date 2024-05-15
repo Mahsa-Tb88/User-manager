@@ -114,7 +114,7 @@ async function deleteBranch(id) {
     const { data } = await axios.delete("/branches/" + id);
     return data;
   } catch (e) {
-    return { success: false, message: e.message };
+    return { success: false, message: e.response.data.message };
   }
 }
 
