@@ -16,6 +16,7 @@ export default function UserEdit() {
   useEffect(() => {
     dispatch({ type: "setPageTitle", payload: "Edit User" });
   }, []);
+
   useEffect(() => {
     const timeOut = setTimeout(fetchUserById, 20);
     return () => clearTimeout(timeOut);
@@ -35,35 +36,13 @@ export default function UserEdit() {
     dispatch({ type: "setIsSingleLoading", dispatch: false });
     setLoaded(true);
   }
-  async function handleSubmit(data) {
-    console.log(data);
-    const { firstname, lastname, phone, emial, province, description, branch } =
-      data;
-    const result = await updateUser({
-      firstname,
-      lastname,
-      phone,
-      emial,
-      province,
-      description,
-      branch,
-      id: user._id,
-    });
-    if (result.success) {
-      dispatch({ type: "updateUser", payload: result.body });
-      navigate("/user/" + user._id);
-      toast.success(result.message);
-    } else {
-      toast.error(result.message);
-    }
-  }
   let content = "";
   if (state.isSingleLoading) {
     content = <Loading />;
   } else if (state.singleLoadingError) {
     content = <LoadingError reload={fetchUserById} />;
   } else if (loaded) {
-    content = <EditForm onSubmit={handleSubmit} type="edit" user={user} />;
+    content = <EditForm type="edit" user={user} />;
   }
   return <div>{content}</div>;
 }

@@ -77,7 +77,15 @@ export default function UserList({
               >
                 <th scope="row">{index + 1}</th>
                 <td>
-                  <img className="img-user" width="30" src={user.avatarURL} />{" "}
+                  <img
+                    className="img-user"
+                    width="30"
+                    src={
+                      user.image
+                        ? SERVER_URL + user.image
+                        : SERVER_URL + "/uploads/user-1723232043280.png"
+                    }
+                  />{" "}
                 </td>
                 <td>{user.firstname + " " + user.lastname}</td>
                 <td>{user.phone}</td>

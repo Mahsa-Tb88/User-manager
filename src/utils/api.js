@@ -1,6 +1,5 @@
 import axios from "axios";
-axios.defaults.baseURL = "http://localhost:3000";
-axios.defaults.timeout = 1000;
+axios.defaults.baseURL = SERVER_URL;
 
 async function getAllBranches() {
   try {
@@ -51,12 +50,10 @@ async function getUserById(id) {
   }
 }
 async function getUsersInBranch(branchName, searchUser) {
-  console.log(branchName, searchUser);
   try {
     const { data } = await axios.get("/branches/" + branchName, {
       user: searchUser,
     });
-    console.log(data);
     return data;
   } catch (e) {
     return { success: false, message: e.message };
@@ -90,7 +87,6 @@ async function updateUser(user) {
     return { success: false, message: e.message };
   }
 }
-
 async function updateBranch(newbranch) {
   try {
     const { data } = await axios.put("/branches/" + newbranch._id, {
@@ -117,7 +113,19 @@ async function deleteBranch(id) {
     return { success: false, message: e.response.data.message };
   }
 }
-
+export async function uploadFile(file) {
+  try {
+    const form = new FormData();
+    form.append("file", file);
+    const { data } = await axios.post("/uploads", form);
+    return data;
+  } catch (e) {
+    return {
+      success: false,
+      message: e.message,
+    };
+  }
+}
 export {
   getAllUsers,
   getAllBranches,

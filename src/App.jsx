@@ -7,7 +7,7 @@ import { Outlet } from "react-router-dom";
 export default function App() {
   return (
     <UseContextProvider>
-      <div className="app d-flex justify-content-between align-items-baseline">
+      <div className="app d-flex justify-content-between ">
         <SideBar />
         <div className="w-75 px-2">
           <MainArea />

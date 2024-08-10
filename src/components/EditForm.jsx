@@ -1,15 +1,29 @@
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { useParams } from "react-router-dom";
-import noAvatar from "../assets/image/no-avatar.png";
-import { UseUserContext } from "../context/AppContext";
+import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
-export default function EditForm({ onSubmit, type, user }) {
-  const [selectedImage, setSelectedImage] = useState(noAvatar);
+import { useForm } from "react-hook-form";
+import { useNavigate, useParams } from "react-router-dom";
+import { UseUserContext } from "../context/AppContext";
+import { createUser, updateUser, uploadFile } from "../utils/api";
+
+export default function EditForm({ type, user }) {
+  const profileImage = SERVER_URL + "/uploads/user-1723232043280.png";
+  const [selectedImage, setSelectedImage] = useState(profileImage);
   const [imageChanged, setImageChanged] = useState(false);
-  const params = useParams();
+  const navigate = useNavigate();
 
   const { state, dispatch } = UseUserContext();
+
+  useEffect(() => {
+    if (type === "edit") {
+      if (user.image) {
+        setSelectedImage(SERVER_URL + `${user.image}`);
+      } else {
+        setSelectedImage(profileImage);
+      }
+    }
+  }, []);
+
   const listOfProvince = [
     "British Columbia",
     "Alberta",
@@ -23,42 +37,122 @@ export default function EditForm({ onSubmit, type, user }) {
     "Saskatchewan",
   ];
 
-  const { register, handleSubmit, watch, formState } = useForm({
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useForm({
     defaultValues: {
       firstname: user ? user.firstname : "",
       lastname: user ? user.lastname : "",
       email: user ? user.email : "",
       phone: user ? user.phone : "",
+      image: user ? user.image : "",
       province: user ? user.province : 1,
       branch: user ? user.branch : 1,
       description: user ? user.description : "",
     },
   });
-  const { errors, isSubmitting } = formState;
 
-  // const imageField = { ...register("image") };
-  function handleImageSelect(e) {
+  const imageField = { ...register("image") };
+  async function handleImageSelect(e) {
     imageField.onChange(e);
     const file = e.target.files[0];
-    console.log(file);
-    setImageChanged(true);
-    setSelectedImage(URL.createObjectURL(file));
+    if (file) {
+      setImageChanged(true);
+      const result = await uploadFile(file);
+      if (result.filename) {
+        setSelectedImage(SERVER_URL + "/uploads/" + result.filename);
+      } else if (result.error) {
+        toast.error(result.error);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+    }
   }
 
   function handleRemoveImage() {
-    setSelectedImage(noAvatar);
+    setSelectedImage(profileImage);
     setValue("image", "");
+  }
+
+  async function onSubmit(data) {
+    console.log(data);
+    const {
+      firstname,
+      lastname,
+      phone,
+      email,
+      image,
+      branch,
+      description,
+      province,
+    } = data;
+    if (image?.length && imageChanged) {
+      const startIndex = selectedImage.indexOf("/uploads");
+      data.image = selectedImage.substring(startIndex);
+    }
+
+    if (type == "new") {
+      const result = await createUser({
+        firstname,
+        lastname,
+        phone,
+        image: data.image,
+        email,
+        branch,
+        description,
+        province,
+      });
+      if (result.success) {
+        dispatch({ type: "createNewUser", payload: result.body });
+        toast.success(result.message);
+        navigate("/");
+      } else {
+        toast.error(result.message);
+      }
+    } else {
+      const {
+        firstname,
+        lastname,
+        phone,
+        email,
+        province,
+        description,
+        image,
+        branch,
+      } = data;
+      const result = await updateUser({
+        firstname,
+        lastname,
+        phone,
+        email,
+        image,
+        province,
+        description,
+        branch,
+        id: user._id,
+      });
+      if (result.success) {
+        dispatch({ type: "updateUser", payload: result.body });
+        navigate("/user/" + user._id);
+        toast.success(result.message);
+      } else {
+        toast.error(result.message);
+      }
+    }
   }
 
   return (
     <form
-      className=" w-75 m-auto mt-3 bg-light px-4 py-2 rounded-2"
+      className=" w-75 m-auto my-4 bg-light px-4 py-2 rounded-2"
       onSubmit={handleSubmit(onSubmit)}
     >
       <div className="table">
         <div className="d-flex justify-content-between align-items-center mb-3 ">
           <div className="d-flex flex-column justify-content-center align-items-start ">
-            <label className="mb-1 label">Name</label>
+            <label className="mb-1 label fw-bold">Name</label>
             <input
               type="text"
               className="input"
@@ -77,7 +171,7 @@ export default function EditForm({ onSubmit, type, user }) {
             {errors.name && <p className="errors">{errors.name.message}</p>}
           </div>
           <div className="d-flex flex-column justify-content-center align-items-start ">
-            <label className="mb-1 label">Family</label>
+            <label className="mb-1 label fw-bold">Family</label>
             <input
               type="text"
               className="input"
@@ -98,26 +192,26 @@ export default function EditForm({ onSubmit, type, user }) {
         </div>
         <div className="d-flex justify-content-between align-items-center  mb-3">
           <div className="d-flex flex-column justify-content-center align-items-start ">
-            <label className="mb-1 label">Phone</label>
+            <label className="mb-1 label fw-bold">Phone</label>
             <input
-              type="text"
+              type="number"
               className="input"
               {...register("phone", {
                 required: "You must enter a Phone number",
                 minLength: {
-                  value: 12,
-                  message: "It is short, Phone number must be 12 number",
+                  value: 10,
+                  message: "It is short, Phone number must be 10 number",
                 },
                 maxLength: {
                   value: 12,
-                  message: "It is long, Phone number must be 12 number",
+                  message: "It is long, Phone number must be 10 number",
                 },
               })}
             />
             {errors.phone && <p className="errors">{errors.phone.message}</p>}
           </div>
           <div className="d-flex flex-column justify-content-center align-items-start ">
-            <label className="mb-1 label">Province</label>
+            <label className="mb-1 label fw-bold">Province</label>
             <select
               className="input"
               {...register("province", {
@@ -137,7 +231,7 @@ export default function EditForm({ onSubmit, type, user }) {
         </div>
         {/*  <div className="d-flex flex-column justify-content-start align-items-start mb-4">
           <div className="d-flex  justify-content-center align-items-center">
-            <label className="mb-1 label">Address of Image</label>
+            <label className="mb-1 label fw-bold">Address of Image</label>
             <img
               src={
                 params.id
@@ -162,11 +256,18 @@ export default function EditForm({ onSubmit, type, user }) {
             <p className="errors">{errors.avatarURL.message}</p>
           )}
         </div> */}
-        {/* <div className="d-flex  flex-column justify-content-center align-items-start mt-5 mb-4">
-          <label className="mb-1 label ">Photo</label>
+
+        <div className=" d-flex  flex-column justify-content-center align-items-start mt-5 mb-4">
+          <label className="mb-1 label fw-bold ">Photo</label>
           <div className=" d-flex flex-column flex-md-row  justify-content-between align-items-center">
-            <div className="me-4 d-flex justify-content-center align-items-center flex-column">
-              <div>
+            <img
+              src={selectedImage}
+              width={100}
+              height={100}
+              className=" mt-md-0 bg-transparent rounded-circle"
+            />
+            <div className="bg-transparent ms-5 me-4 d-flex justify-content-center align-items-center flex-column">
+              <div className="">
                 <input
                   {...imageField}
                   id="selectImage"
@@ -176,7 +277,7 @@ export default function EditForm({ onSubmit, type, user }) {
                   onChange={handleImageSelect}
                 />
                 <label
-                  className="btn-select mt-5 mb-4 text-center text-white px-2 py-2 border-0 fs-5 rounded-1"
+                  className="btn-select mb-4 text-center text-white px-2 py-2 border-0 fs-5 rounded-1"
                   htmlFor="selectImage"
                 >
                   Select Image
@@ -190,19 +291,14 @@ export default function EditForm({ onSubmit, type, user }) {
                 Remove Image
               </button>
             </div>
-            <img
-              src={selectedImage}
-              width={200}
-              height={200}
-              className="mt-5 mt-md-0"
-            />
           </div>
           {errors.image && (
             <p className="errors mt-3">{errors.image.message}</p>
           )}
-        </div> */}
+        </div>
+
         <div className="d-flex flex-column justify-content-center align-items-start mb-3">
-          <label className="mb-1 label">Branch</label>
+          <label className="mb-1 label fw-bold">Branch</label>
           <select
             className="input"
             {...register("branch", {
@@ -217,15 +313,16 @@ export default function EditForm({ onSubmit, type, user }) {
           </select>
           {errors.branch && <p className="errors">{errors.branch.message}</p>}
         </div>
-        <div className="d-flex flex-column justify-content-center align-items-start ">
-          <label className="mb-1 label">Email</label>
+
+        <div className="d-flex flex-column justify-content-center align-items-start mb-4">
+          <label className="mb-1 label fw-bold">Email</label>
           <input
             type="text"
             className="input"
             {...register("email", {
               required: "You must enter an email",
               minLength: {
-                value: 3,
+                value: 8,
                 message: "Email must be 8 Characters at least",
               },
             })}

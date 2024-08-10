@@ -54,8 +54,8 @@ export default function UserList() {
     );
   } else if (state.multiLoadingError) {
     content = (
-      <div>
-        <span>{state.multiLoadingError.message}</span>
+      <div className="d-flex flex-column">
+        <span className="mb-3 text-danger">{state.multiLoadingError.message}</span>
         <button className="btn btn-primary" onClick={fetchBranches}>
           Try again
         </button>

@@ -42,7 +42,6 @@ export default function Createbranch() {
             return b;
           }
         });
-        console.log(newBranches);
         dispatch({ type: "setBranches", payload: newBranches });
         toast.success(result.message);
         navigate("/");
@@ -51,7 +50,6 @@ export default function Createbranch() {
       }
     } else {
       const result = await createBranch({ branchName: data.branch });
-      console.log(result);
       if (result.success) {
         dispatch({ type: "createNewBranch", payload: result.body });
         toast.success(result.message);

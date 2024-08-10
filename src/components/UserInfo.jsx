@@ -60,7 +60,14 @@ export default function UserInfo() {
     content = (
       <div className="w-100">
         <div className="d-flex justify-content-start align-items-center">
-          <img className="w-25 rounded-circle me-5" src={user.avatarURL} />
+          <img
+            className="w-25 rounded-circle me-5"
+            src={
+              user.image
+                ? SERVER_URL + user.image
+                : SERVER_URL + "/uploads/user-1723232043280.png"
+            }
+          />
           <div className="">
             <p className="fs-4 mb-4">{user.firstname + " " + user.lastname}</p>
             <div className="d-flex justify-content-between align-items-center">

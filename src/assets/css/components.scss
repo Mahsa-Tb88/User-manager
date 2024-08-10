@@ -1,6 +1,5 @@
 .app {
-  width: 100vw;
-  height: 100vh;
+  // height: 100vh;
   display: flex;
 }
 
@@ -49,7 +48,6 @@
 
 .userList {
   background-color: #f7f7f7;
-  height: 100vh;
   .inputSearch {
     border-bottom: 1px solid #dee2e6;
     padding-bottom: 20px;

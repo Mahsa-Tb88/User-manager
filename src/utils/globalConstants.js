@@ -1,3 +1,5 @@
+globalThis.SERVER_URL = "http://localhost:3000";
+
 globalThis.PROVINCE = [
   { id: 1, name: "British Columbia" },
   { id: 2, name: "Alberta" },

@@ -8,7 +8,7 @@ export default function MainArea() {
   const { state, dispatch } = UseUserContext();
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   useEffect(() => {
     if (location.pathname == "/user/newUser") {
       dispatch({ type: "setPageTitle", payload: "Create  User" });
@@ -49,16 +49,21 @@ export default function MainArea() {
                 </button>
                 <HiArrowUturnLeft />
               </div>
+            ) : !state.branches.length ? (
+              <div className=" d-flex justify-content-between align-items-center">
+                <span className="btnAdd opacity-50 text-white">Add User</span>
+                <FaUserPlus className="text-white opacity-50" />
+              </div>
             ) : (
-              <div className="d-flex justify-content-between align-items-center">
+              <div className=" d-flex justify-content-between align-items-center">
                 <Link
                   className="btnAdd text-white"
-                  to="/user/newUser"
+                  to={"/user/newUser"}
                   onClick={() => addUserHandler()}
                 >
                   Add User
                 </Link>
-                <FaUserPlus />
+                <FaUserPlus className="text-white" />
               </div>
             )}
           </div>
