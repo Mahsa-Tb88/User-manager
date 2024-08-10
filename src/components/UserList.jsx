@@ -1,13 +1,8 @@
-import React, { useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import { UseUserContext } from "../context/AppContext";
-export default function UserList({
-  multiUserLoadingError,
-  isMultiUserLoading,
-  fetchUsers,
-}) {
+export default function UserList() {
   const { state, dispatch } = UseUserContext();
-  const params = useParams();
   const navigate = useNavigate();
 
   const listOfProvince = [
@@ -23,41 +18,13 @@ export default function UserList({
     "Saskatchewan",
   ];
 
-  useEffect(() => {
-    dispatch({ type: "setPageTitle", payload: params.BranchName });
-    const timeOut = setTimeout(fetchUsers, 20);
-    return () => clearTimeout(timeOut);
-  }, [params.BranchName]);
-
   function userInfoHandler(id) {
     navigate(`/user/${id}`);
   }
-  let content = "";
-  if (isMultiUserLoading) {
-    content = (
-      <div className="d-flex flex-column justify-content-center align-items-center">
-        <span>on loading...</span>
-        <span className="spinner-grow text-primary"></span>
-      </div>
-    );
-  } else if (multiUserLoadingError) {
-    content = (
+
+  return (
+    <div>
       <div>
-        <span>{state.multiLoadingError.message}</span>
-        <button className="btn btn-primary" onClick={fetchUsers}>
-          Try again
-        </button>
-      </div>
-    );
-  } else if (!state.users.length) {
-    content = (
-      <div>
-        <p className="bg-primary mt-3 p-2 text-white fs-5">There is no users</p>
-      </div>
-    );
-  } else {
-    content = (
-      <div className="tableuserlist">
         <table className="table table-hover table-bordered text-center">
           <thead className="table-dark">
             <tr className="table-row">
@@ -68,7 +35,7 @@ export default function UserList({
               <th scope="col">Province</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="body bg-blac">
             {state.users.map((user, index) => (
               <tr
                 key={user._id}
@@ -85,7 +52,7 @@ export default function UserList({
                         ? SERVER_URL + user.image
                         : SERVER_URL + "/uploads/user-1723232043280.png"
                     }
-                  />{" "}
+                  />
                 </td>
                 <td>{user.firstname + " " + user.lastname}</td>
                 <td>{user.phone}</td>
@@ -95,7 +62,6 @@ export default function UserList({
           </tbody>
         </table>
       </div>
-    );
-  }
-  return <div>{content}</div>;
+    </div>
+  );
 }

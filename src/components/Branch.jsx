@@ -10,11 +10,12 @@ export default function Branch() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isMultiUserLoading, setIsMultiUserLoading] = useState(true);
   const [multiUserLoadingError, setMultiUserLoadingError] = useState(false);
+
   useEffect(() => {
     dispatch({ type: "setPageTitle", payload: params.BranchName });
     const timeOut = setTimeout(fetchUsers, 1000);
     return () => clearTimeout(timeOut);
-  }, [searchParams]);
+  }, [searchParams, params.BranchName]);
 
   async function fetchUsers() {
     setIsMultiUserLoading(true);
@@ -35,22 +36,52 @@ export default function Branch() {
     setSearchParams({ user: value });
   }
 
-  return (
-    <div className="mx-auto w-75 branch mt-5">
-      <div className="inputSearchUser">
-        <input
-          type="text"
-          placeholder="Search..."
-          className="searchUser"
-          value={searchParams.get("user") || ""}
-          onChange={(e) => searchUserHandler(e.target.value)}
+  let content = "";
+
+  if (isMultiUserLoading) {
+    content = (
+      <div className="d-flex flex-column justify-content-center align-items-center">
+        <span>on loading...</span>
+        <span className="spinner-grow text-primary"></span>
+      </div>
+    );
+  } else if (multiUserLoadingError) {
+    content = (
+      <div>
+        <span>{state.multiLoadingError.message}</span>
+        <button className="btn btn-primary" onClick={fetchUsers}>
+          Try again
+        </button>
+      </div>
+    );
+  } else if (!state.users.length) {
+    content = (
+      <div>
+        <p className="bg-primary rounded-3 mt-3 p-2 text-white fs-5">
+          There is no users
+        </p>
+      </div>
+    );
+  } else {
+    content = (
+      <div>
+        <div className="inputSearchUser">
+          <input
+            type="text"
+            placeholder="Search..."
+            className="searchUser"
+            value={searchParams.get("user") || ""}
+            onChange={(e) => searchUserHandler(e.target.value)}
+          />
+        </div>
+        <UserList
+          isMultiUserLoading={isMultiUserLoading}
+          multiUserLoadingError={multiUserLoadingError}
+          fetchUsers={fetchUsers}
         />
       </div>
-      <UserList
-        isMultiUserLoading={isMultiUserLoading}
-        multiUserLoadingError={multiUserLoadingError}
-        fetchUsers={fetchUsers}
-      />
-    </div>
-  );
+    );
+  }
+
+  return <div className="mx-auto w-75 branch mt-5">{content}</div>;
 }

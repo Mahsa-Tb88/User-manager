@@ -50,14 +50,14 @@ export default function ListBranch({ branch }) {
         >
           {branch.branchName}
         </div>
-        <div className="d-flex flex-column justify-content-between align-items-center ">
+        <div className="d-flex pe-auto flex-column justify-content-between align-items-center ">
           <div
             onClick={() => RenameBranchHandler(branch._id, branch.branchName)}
           >
             <FaEdit className=" editBranch" />
           </div>
           <div onClick={(e) => RemoveBranchHandler(branch._id)}>
-            <FaRegTrashAlt className="removeBranch" />
+            <FaRegTrashAlt className="removeBranch pe-auto" />
           </div>
         </div>
       </div>
