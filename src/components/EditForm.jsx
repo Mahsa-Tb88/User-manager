@@ -152,7 +152,9 @@ export default function EditForm({ type, user }) {
       <div className="table">
         <div className="d-flex justify-content-between align-items-center mb-3 ">
           <div className="d-flex flex-column justify-content-center align-items-start ">
-            <label className="mb-1 label fw-bold">Name</label>
+            <label className="mb-1 label fw-bold d-flex align-items-center">
+              <span>Name</span> <span className="text-danger ms-1">*</span>
+            </label>
             <input
               type="text"
               className="input"
@@ -171,7 +173,9 @@ export default function EditForm({ type, user }) {
             {errors.name && <p className="errors">{errors.name.message}</p>}
           </div>
           <div className="d-flex flex-column justify-content-center align-items-start ">
-            <label className="mb-1 label fw-bold">Family</label>
+            <label className="mb-1 label fw-bold d-flex align-items-center">
+              <span>Family</span> <span className="text-danger ms-1">*</span>
+            </label>
             <input
               type="text"
               className="input"
@@ -192,7 +196,10 @@ export default function EditForm({ type, user }) {
         </div>
         <div className="d-flex justify-content-between align-items-center  mb-3">
           <div className="d-flex flex-column justify-content-center align-items-start ">
-            <label className="mb-1 label fw-bold">Phone</label>
+            <label className="mb-1 label fw-bold d-flex align-items-center">
+              <span>Phone</span>
+              <span className="text-danger ms-1">*</span>
+            </label>
             <input
               type="number"
               className="input"
@@ -204,7 +211,7 @@ export default function EditForm({ type, user }) {
                 },
                 maxLength: {
                   value: 12,
-                  message: "It is long, Phone number must be 10 number",
+                  message: "It is long, Phone number must be 12 number",
                 },
               })}
             />
@@ -298,7 +305,10 @@ export default function EditForm({ type, user }) {
         </div>
 
         <div className="d-flex flex-column justify-content-center align-items-start mb-3">
-          <label className="mb-1 label fw-bold">Branch</label>
+          <label className="mb-1 label fw-bold d-flex align-items-center">
+            <span className="bg-transparent">Branch</span>{" "}
+            <span className="bg-transparent text-danger ms-1">*</span>
+          </label>
           <select
             className="input"
             {...register("branch", {
@@ -315,7 +325,10 @@ export default function EditForm({ type, user }) {
         </div>
 
         <div className="d-flex flex-column justify-content-center align-items-start mb-4">
-          <label className="mb-1 label fw-bold">Email</label>
+          <label className="mb-1 label fw-bold d-flex align-items-center ">
+            <span className="bg-transparent">Email</span>
+            <span className="bg-transparent text-danger ms-1">*</span>
+          </label>
           <input
             type="text"
             className="input"
